@@ -12,16 +12,18 @@
     <artifactId>common</artifactId>
 
     <dependencies>
-        <!-- Lombok 公共依赖 -->
+        <!-- Lombok 注解处理器（Maven 打包必须生效） -->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <optional>true</optional>
         </dependency>
-        <!-- Spring Data JPA 实体类依赖 -->
+
+        <!-- JPA -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
     </dependencies>
+
 </project>
