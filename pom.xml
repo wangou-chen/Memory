@@ -16,46 +16,18 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<name>memory</name>
 	<description>Personal Memo Management System</description>
+	<packaging>pom</packaging>
 
+	<modules>
+		<module>common</module>
+		<module>db-service</module>
+		<module>gateway</module>
+	</modules>
 	<properties>
 		<!-- 指定Java版本为17 -->
 		<java.version>17</java.version>
 	</properties>
 
-	<dependencies>
-		<!-- Spring Web：实现RESTful API -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-
-		<!-- Spring Data JPA：核心依赖，解决“程序包不存在”问题 -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-
-		<!-- H2嵌入式数据库：无需安装，开箱即用 -->
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- Lombok：简化实体类代码 -->
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-			<optional>true</optional>
-		</dependency>
-
-		<!-- 测试依赖（可选） -->
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
 
 	<build>
 		<plugins>
@@ -74,4 +46,19 @@
 			</plugin>
 		</plugins>
 	</build>
+
+
+	<repositories>
+		<repository>
+			<id>aliyunmaven</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+		</repository>
+	</repositories>
+
+	<pluginRepositories>
+		<pluginRepository>
+			<id>aliyunmaven</id>
+			<url>https://maven.aliyun.com/repository/public</url>
+		</pluginRepository>
+	</pluginRepositories>
 </project>

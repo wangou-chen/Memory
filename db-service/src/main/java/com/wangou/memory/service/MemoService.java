@@ -1,5 +1,4 @@
 package com.wangou.memory.service;
-
 import com.wangou.memory.entity.Memo;
 import com.wangou.memory.repository.MemoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
