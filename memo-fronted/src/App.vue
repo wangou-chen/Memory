@@ -37,6 +37,18 @@
           </template>
         </el-table-column>
       </el-table>
+
+      <!-- 分页组件 -->
+      <div style="text-align: center; margin-top: 20px;">
+        <el-pagination
+          v-model:current-page="pageNum"
+          v-model:page-size="pageSize"
+          :total="total"
+          layout="total, prev, pager, next, jumper"
+          @current-change="fetchMemos"
+          @size-change="fetchMemos"
+        />
+      </div>
     </el-card>
   </div>
 </template>
@@ -44,37 +56,39 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-// 导入的 deleteMemo 保留，用于调用接口
 import { getMemoList, addMemo, updateMemo, deleteMemo } from './api/memo'
 
 // 表单引用
 const formRef = ref(null)
-// 加载状态
 const loading = ref(false)
-// 表单数据
-const form = ref({
-  id: '',
-  title: '',
-  content: ''
-})
-// 备忘录列表
+const form = ref({ id: '', title: '', content: '' })
 const memoList = ref([])
-// 表单校验规则（标题不能为空）
 const rules = ref({
   title: [{ required: true, message: '标题不能为空', trigger: 'blur' }]
 })
 
-// 页面加载时查所有备忘录
+// 分页变量
+const pageNum = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+
+// 页面加载时查询
 onMounted(() => {
   fetchMemos()
 })
 
-// 查所有备忘录
+// ======================
+// 关键修改：JPA 分页取值
+// ======================
 const fetchMemos = async () => {
   loading.value = true
   try {
-    const res = await getMemoList()
-    memoList.value = res.data || []
+    const res = await getMemoList(pageNum.value, pageSize.value)
+    
+    // Spring Data JPA 返回格式：content + totalElements
+    memoList.value = res.data.content
+    total.value = res.data.totalElements
+    
   } catch (err) {
     console.log('查列表失败：', err)
   } finally {
@@ -84,27 +98,23 @@ const fetchMemos = async () => {
 
 // 提交表单（新增/修改）
 const submitForm = async () => {
-  // 先校验表单
   const valid = await formRef.value.validate()
   if (!valid) return
 
   try {
     if (form.value.id) {
-      // 修改
       await updateMemo(form.value.id, {
         title: form.value.title,
         content: form.value.content
       })
       ElMessage.success('修改成功！')
     } else {
-      // 新增
       await addMemo({
         title: form.value.title,
         content: form.value.content
       })
       ElMessage.success('新增成功！')
     }
-    // 重置表单 + 刷新列表
     resetForm()
     fetchMemos()
   } catch (err) {
@@ -112,18 +122,17 @@ const submitForm = async () => {
   }
 }
 
-// 编辑备忘录（回显数据）
+// 编辑
 const editMemo = (row) => {
   form.value.id = row.id
   form.value.title = row.title
   form.value.content = row.content
 }
 
-// 关键修复：把函数名改成 handleDeleteMemo，避免和导入的 deleteMemo 重名
+// 删除
 const handleDeleteMemo = async (id) => {
   try {
     await ElMessageBox.confirm('确定删除吗？', '提示', { type: 'warning' })
-    // 调用导入的 deleteMemo 接口函数
     await deleteMemo(id)
     ElMessage.success('删除成功！')
     fetchMemos()
@@ -140,7 +149,6 @@ const resetForm = () => {
 </script>
 
 <style scoped>
-/* 简单样式，让界面不丑 */
 h1 {
   font-weight: normal;
   border-bottom: 1px solid #eee;

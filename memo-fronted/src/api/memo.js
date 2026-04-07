@@ -1,14 +1,18 @@
 import request from '../utils/request'
 
-// 1. 查询所有备忘录（对应后端 /api/memos）
-export function getMemoList() {
+// 1. 查询所有备忘录（分页版）
+export function getMemoList(pageNum = 1, pageSize = 10) {
   return request({
     url: '/api/memos',
-    method: 'get'
+    method: 'get',
+    params: {
+      pageNum,
+      pageSize
+    }
   })
 }
 
-// 2. 新增备忘录（对应后端 POST /api/memos）
+// 2. 新增备忘录
 export function addMemo(data) {
   return request({
     url: '/api/memos',
@@ -17,7 +21,7 @@ export function addMemo(data) {
   })
 }
 
-// 3. 修改备忘录（对应后端 PUT /api/memos/ID）
+// 3. 修改备忘录
 export function updateMemo(id, data) {
   return request({
     url: `/api/memos/${id}`,
@@ -26,10 +30,10 @@ export function updateMemo(id, data) {
   })
 }
 
-// 4. 删除备忘录（对应后端 DELETE /api/memos/ID）
+// 4. 删除备忘录
 export function deleteMemo(id) {
   return request({
     url: `/api/memos/${id}`,
-    method: 'delete'
+    method: 'delete',
   })
 }

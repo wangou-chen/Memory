@@ -1,7 +1,10 @@
 package com.wangou.memory.service;
+
 import com.wangou.memory.entity.Memo;
 import com.wangou.memory.repository.MemoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -25,10 +28,17 @@ public class MemoService {
     }
 
     /**
-     * 查询所有备忘录
+     * 查询所有备忘录（不分页）
      */
     public List<Memo> getAllMemos() {
         return memoRepository.findAll();
+    }
+
+    /**
+     * 分页查询备忘录（JPA 原生分页）
+     */
+    public Page<Memo> getAllMemos(Pageable pageable) {
+        return memoRepository.findAll(pageable);
     }
 
     /**
