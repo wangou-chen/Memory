@@ -8,6 +8,14 @@
       <el-form :model="form" :rules="rules" ref="formRef" label-width="80px">
         <el-form-item label="标题" prop="title">
           <el-input v-model="form.title" placeholder="请输入备忘录标题" />
+          <!-- AI 生成标题按钮 -->
+          <el-button 
+            type="success" 
+            size="small" 
+            @click="generateTitle" 
+            style="margin-left: 10px; margin-top: 5px;">
+            AI 智能生成标题
+          </el-button>
         </el-form-item>
         <el-form-item label="内容" prop="content">
           <el-input v-model="form.content" type="textarea" rows="4" placeholder="请输入备忘录内容" />
@@ -57,6 +65,12 @@
 import { ref, onMounted } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { getMemoList, addMemo, updateMemo, deleteMemo } from './api/memo'
+
+// ======================
+// AI 配置（填写你的 KEY）
+// ======================
+const API_KEY = "sk-irsdqdjcgfiaeteposjrhersorxyzfuikapdpdekacdemmdt";
+const API_URL = "https://api.siliconflow.cn/v1/chat/completions";
 
 // 表单引用
 const formRef = ref(null)
@@ -146,6 +160,51 @@ const resetForm = () => {
   formRef.value?.resetFields()
   form.value = { id: '', title: '', content: '' }
 }
+
+// ======================
+// AI 生成标题（核心功能）
+// ======================
+const generateTitle = async () => {
+  const content = form.value.content;
+
+  if (!content || content.trim() === '') {
+    ElMessage.warning('请先输入备忘录内容');
+    return;
+  }
+
+  try {
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Authorization": "Bearer " + API_KEY,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        model: "Qwen/Qwen3-8B",
+        messages: [
+          {
+            role: "user",
+            content: `给以下内容起一个概括性的简短标题，只直接输出标题，禁止思考、禁止解释、禁止多余文字：${content}`
+          }
+        ],
+        temperature: 0.2,
+        max_tokens: 32,
+        stream: false
+      })
+    });
+
+    const jsonData = await response.json();
+    const title = jsonData.choices[0].message.content.trim();
+    
+    // 自动填入标题
+    form.value.title = title;
+    ElMessage.success('AI 标题生成完成！');
+
+  } catch (e) {
+    console.error("AI 错误：", e);
+    ElMessage.error('AI 生成失败，请重试');
+  }
+};
 </script>
 
 <style scoped>
